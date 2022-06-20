@@ -102,15 +102,25 @@ export async function read(event) {
       mp3s[englishMp3.hash] = englishMp3;
       mp3s[mandarinMp3.hash] = mandarinMp3;
 
-      let singleMp3 = !!(parseInt(cantoneseMp3.hash, 16) | parseInt(englishMp3.hash, 16) | parseInt(mandarinMp3.hash, 16) === parseInt(cantoneseMp3.hash, 16));
+      let ceMatch = cantoneseMp3.hash === englishMp3.hash
+      let cmMatch = cantoneseMp3.hash === mandarinMp3.hash
+      let emMatch = englishMp3.hash === mandarinMp3.hash
+      let singleMp3 = ceMatch && cmMatch && emMatch;
 
-      mp3s[cantoneseMp3.hash] = cantoneseMp3;
-      mp3s[englishMp3.hash] = englishMp3;
-      mp3s[mandarinMp3.hash] = mandarinMp3;
+      let cantoneseUnique = !ceMatch && !cmMatch;
+      let englishUnique = !ceMatch && !emMatch;
+      let mandarinUnique = !cmMatch && !emMatch;
 
-      if (!singleMp3) {
+      // Set the language for the mp3 if it is unique.
+      if (cantoneseUnique) {
         cantoneseMp3.language = "cantonese";
+      }
+
+      if (englishUnique) {
         englishMp3.language = "english";
+      }
+
+      if (mandarinUnique) {
         mandarinMp3.language = "mandarin";
       }
 
@@ -124,8 +134,8 @@ export async function read(event) {
           description: '',
           singleMp3,
           cantonese: cantoneseMp3.hash,
-          english: singleMp3 ? cantoneseMp3.hash : englishMp3.hash,
-          mandarin: singleMp3 ? cantoneseMp3.hash : mandarinMp3.hash,
+          english: englishMp3.hash,
+          mandarin: mandarinMp3.hash,
         });
         continue;
       }
@@ -138,8 +148,8 @@ export async function read(event) {
           description: bookName,
           singleMp3,
           cantonese: cantoneseMp3.hash,
-          english: singleMp3 ? cantoneseMp3.hash : englishMp3.hash,
-          mandarin: singleMp3 ? cantoneseMp3.hash : mandarinMp3.hash,
+          english: englishMp3.hash,
+          mandarin: mandarinMp3.hash,
         };
         continue;
       }
@@ -152,8 +162,8 @@ export async function read(event) {
           description: SYSTEM_CODE_DECRIPTIONS[code],
           singleMp3,
           cantonese: cantoneseMp3.hash,
-          english: singleMp3 ? cantoneseMp3.hash : englishMp3.hash,
-          mandarin: singleMp3 ? cantoneseMp3.hash : mandarinMp3.hash,
+          english: englishMp3.hash,
+          mandarin: mandarinMp3.hash,
         });
         continue;
       }
