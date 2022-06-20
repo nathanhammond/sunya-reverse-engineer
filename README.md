@@ -15,6 +15,11 @@ wget -r -np -nd -A tid,zip,pdf,mp3 --no-check-certificate --directory-prefix=ass
 
 The Sun Ya pen's file format is `.tid`. It is a custom binary format.
 
+Notable weirdness:
+- 5654 - 鋼琴卡和鼓卡.tid
+- 5664 - 限量版故事卡檔案.tid
+- 49000 - 新雅幼兒互動點讀圖典及拼字套裝.tid
+
 ### Header
 
 The header is 280 bytes long and starts at `0x00`. It has the following structure:
@@ -46,13 +51,13 @@ This section starts at `0x118` and has a variable length. The length of this sec
 If there is no value present the whole struct is 7 bytes of `0xFF`.
 
 The indices in this array are used to identify which OID numeric code to use. The OID numeric code is the value of the field at `0x114` + the index number in this array. Some of these items map to control and guidance audio that are not book-specific:
-- The book name is stored at the code which corresponds to its book ID.
+- The book name is stored at the code which corresponds to its book ID (e.g. `49001`).
 - `52000` through (at least) `52102` are used for system codes.
 - `68000` through `68090` are used for system codes.
 
 #### 2. MP3 Files
 
-The MP3 section starts directly following the array of pointers to MP3 Address and Length Structs by Language and is of variable length.
+The MP3 section starts directly following the Array of Pointers to MP3 Address and Length Structs by Language and is of variable length.
 
 The MP3 files are directly concatenated with no separators. The contents of the section are not in any particular order, and it is likely possible to relocate arbitrarily. ID3 tags and other metadata appear inline.
 
@@ -60,7 +65,7 @@ The MP3 processor appears to support a large combination of MPEG versions and bi
 
 #### 3. Array of MP3 Address and Length Structs by Language
 
-Following the MP3s there is an array of structs that store address and length by language. The start of this section is is variable. The length of this section is variable. Indexing into this array is done via direct addressing from the array of addresses in the first section.
+Following the MP3s there is an array of structs that store address and length by language. The start position of this section is is variable. The length of this section is variable. Indexing into this array is done via direct addressing from the array of addresses in the first section.
 
 This segment is described by the following struct:
 
@@ -100,8 +105,8 @@ The array length from the second header specifies an array length which is popul
 
 | Endian | Length | Description |
 |---|---|---|
-| Big Endian | uint32 | Pointer. |
-| Little Endian | uint16 | Length. |
+| Big Endian | uint32 | Pointer |
+| Little Endian | uint16 | Length |
 
 #### 6. (`49000` only) Separator
 
@@ -119,9 +124,9 @@ Array items end at: 85622978
 MP3s start at: 85622979
 35369
 
-#### 8. (`49001+` only) Trailing Bytes
+#### 8. (`49001`+ only) Trailing Bytes
 
-For books other than ID `49000` each file ends with 395,216 bytes of `0xFF`.
+For books other than ID `49000` each `.tid` file ends with 395,216 bytes of `0xFF`.
 
 ***
 
@@ -158,6 +163,7 @@ For books other than ID `49000` each file ends with 395,216 bytes of `0xFF`.
 |---|---|---|---|
 | 0x00 | Little Endian | uint16 | Count of `.tid` files on the pen.
 
+Notable weirdness:
 This length was 85 for mine, but there were only 82 elements.
 
 ### Book Information
