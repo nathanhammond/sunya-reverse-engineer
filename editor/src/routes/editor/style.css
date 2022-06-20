@@ -1,0 +1,22 @@
+.editor {
+	padding: 0 20px;
+	flex-grow: 1;
+	flex-shrink: 1;
+	overflow: auto;
+	overscroll-behavior: contain;
+}
+
+.editor label { display: block; }
+.editor table { text-align: left; }
+.editor :invalid { border-color: red; }
+
+/* FIXME: Generalize */ 
+.editor button { cursor: pointer; }
+.editor .button { user-select: none; cursor: pointer; color: #000; text-decoration: none; display: inline-block; background-color: #EEE; border: 1px solid #999; border-radius: 3px; padding: 2px 5px; text-align: center; text-indent: 0;font: -moz-button; font: -webkit-small-control; }
+.editor .button:hover { background-color: #DDD; }
+.editor .button:hover:active { background-color: #CCC; }
+.editor .inputfile { position: absolute; right: 100%; bottom: 100%; }
+
+[title] {
+	background-color: #FFFFF0;
+}
