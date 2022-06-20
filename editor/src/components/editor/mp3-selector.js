@@ -1,15 +1,12 @@
 import { h, Component } from 'preact';
+import style from "../../routes/editor/style.css";
 
 function Selected(props) {
-  function scrollToElem() {
-    document.getElementById(props.mp3.hash).scrollIntoView()
-  }
-
   return (
     <>
       <span>{props.mp3.description || props.mp3.fileName}</span>
       {props.unmatchedLanguage ? <span>UNMATCHED LANGUAGE</span> : ""}
-      <button type="button" onClick={scrollToElem}>Jump To MP3</button>
+      <a className={style.button} href={`#${props.mp3.hash}`}>Jump to MP3</a>
       {/* <button type="button">Play</button> */}
       <button type="button" onClick={props.chooseMp3}>Change</button>
     </>
@@ -48,7 +45,7 @@ class Mp3Selector extends Component {
     let chooseMp3 = (event) => {
       props.chooseMp3(props.language, event.target.value)
     }
-  
+
     return props.selected ? <Selected mp3={mp3} chooseMp3={chooseMp3} unmatchedLanguage={unmatchedLanguage} /> : <Unselected chooseMp3={chooseMp3} mp3Array={mp3Array} />
   }
 }
