@@ -83,6 +83,7 @@ export function parseMp3(buffer) {
   let bitrate;
   let samplingRate;
   let channelMode;
+  let error;
 
   while (start < scanner.length) {
     // ID3
@@ -115,6 +116,11 @@ export function parseMp3(buffer) {
     let frameHeader = uint8ToHex(scanner.slice(start, start + 4));
     let headerInt = parseInt(frameHeader, 16);
 
+    if (frameHeader.substring(0,3) != "fff") {
+      error = true;
+      start = scanner.length;
+    }
+
     mpegVersion = MPEG_VERSION[(headerInt & mpegVersionMask).toString(2).padStart(21, "0").substring(0, 2)];
     layer = LAYER_DESCRIPTION[(headerInt & layerMask).toString(2).padStart(19, "0").substring(0, 2)];
     bitrate = BITRATE_LOOKUP[(headerInt & bitrateMask).toString(2).padStart(16, "0").substring(0, 4)][mpegVersion][layer];
@@ -125,17 +131,17 @@ export function parseMp3(buffer) {
 
     let frameLengthInBytes = Math.floor((samplesPerFrame / 8) * ((bitrate * 1000) / samplingRate) + (padding ? SLOT_SIZE[layer] : 0));
     start += frameLengthInBytes;
-
-    // TODO: error handling.
   }
 
-  return {
-    mpegVersion,
-    layer,
-    bitrate,
-    samplingRate,
-    channelMode
-  };
+  if (!error) {
+    return {
+      mpegVersion,
+      layer,
+      bitrate,
+      samplingRate,
+      channelMode
+    };
+  }
 }
 
 export async function mp3FromBuffer(buffer) {
