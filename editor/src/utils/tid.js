@@ -47,7 +47,12 @@ export async function read(event) {
     let reader = new DataView(content);
 
     let editor = decoder.decode(content.slice(0, 32));
-    let bookId = reader.getUint32(0x7C, LITTLE_ENDIAN);
+    let bookId = reader.getUint16(0x7C, LITTLE_ENDIAN);
+
+    // TODO: Figure out what's going on for 5654 and 5664
+    // This value is 61 for both of them.
+    // let unknown = reader.getUint16(0x7E, LITTLE_ENDIAN);
+
     let bookName = file.name.replace(/\.tid$/, '');
 
     let fileSizeOffBy2000 = reader.getUint32(0x84, BIG_ENDIAN)
