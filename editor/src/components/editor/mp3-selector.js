@@ -5,10 +5,10 @@ function Selected(props) {
   return (
     <>
       <span>{props.mp3.description || props.mp3.fileName}</span>
-      {props.unmatchedLanguage ? <span>UNMATCHED LANGUAGE</span> : ""}
       <a className={style.button} href={`#${props.mp3.hash}`}>Jump to MP3</a>
       {/* <button type="button">Play</button> */}
       <button type="button" onClick={props.chooseMp3}>Change</button>
+      {props.unmatchedLanguage ? <span>⚠️ {props.mp3.language.substr(0,1).toUpperCase() + props.mp3.language.substr(1)}</span> : ""}
     </>
   );
 }

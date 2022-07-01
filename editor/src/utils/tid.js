@@ -102,30 +102,57 @@ export async function read(event) {
         mp3FromBuffer(content.slice(mandarinStart, mandarinStart + mandarinLength))
       ]);
 
-      mp3s[cantoneseMp3.hash] = cantoneseMp3;
-      mp3s[englishMp3.hash] = englishMp3;
-      mp3s[mandarinMp3.hash] = mandarinMp3;
-
       let ceMatch = cantoneseMp3.hash === englishMp3.hash
       let cmMatch = cantoneseMp3.hash === mandarinMp3.hash
       let emMatch = englishMp3.hash === mandarinMp3.hash
       let singleMp3 = ceMatch && cmMatch && emMatch;
 
+      let allUnique = !ceMatch && !cmMatch && !emMatch;
       let cantoneseUnique = !ceMatch && !cmMatch;
       let englishUnique = !ceMatch && !emMatch;
       let mandarinUnique = !cmMatch && !emMatch;
 
-      // Set the language for the mp3 if it is unique.
-      if (cantoneseUnique) {
+      if (singleMp3) {
+        // All three match. Just use any of them. Don't set a language.
+        mp3s[cantoneseMp3.hash] = cantoneseMp3;
+      } else if (allUnique) {
+        // Zero match. Blindly set language, blindly store.
         cantoneseMp3.language = "cantonese";
-      }
-
-      if (englishUnique) {
         englishMp3.language = "english";
-      }
-
-      if (mandarinUnique) {
         mandarinMp3.language = "mandarin";
+        mp3s[cantoneseMp3.hash] = cantoneseMp3;
+        mp3s[englishMp3.hash] = englishMp3;
+        mp3s[mandarinMp3.hash] = mandarinMp3;
+      } else {
+        // Two match, one of the three is unique.
+
+        // Handle the unique one.
+        if (cantoneseUnique) {
+          cantoneseMp3.language = "cantonese";
+          mp3s[cantoneseMp3.hash] = cantoneseMp3;
+        } else if (englishUnique) {
+          englishMp3.language = "english";
+          mp3s[englishMp3.hash] = englishMp3;
+        } else if (mandarinUnique) {
+          mandarinMp3.language = "mandarin";
+          mp3s[mandarinMp3.hash] = mandarinMp3;
+        } else {
+          throw new Error("Impossible!");
+        }
+
+        // Figure out which two match and make an informed guess about language.
+        if (ceMatch) {
+          cantoneseMp3.language = "cantonese";
+          mp3s[cantoneseMp3.hash] = cantoneseMp3;
+        } else if (cmMatch) {
+          cantoneseMp3.language = "cantonese";
+          mp3s[cantoneseMp3.hash] = cantoneseMp3;
+        } else if (emMatch) {
+          mandarinMp3.language = "mandarin";
+          mp3s[mandarinMp3.hash] = mandarinMp3;
+        } else {
+          throw new Error("Impossible!");
+        }
       }
 
       code = parseInt(code, 10);
