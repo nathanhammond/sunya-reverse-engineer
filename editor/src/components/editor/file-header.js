@@ -13,13 +13,9 @@ class FileHeader extends Component {
           <span>Editor</span>
           <input value={header.editor} id="editor" name="editor" type="text" disabled readonly />
         </label>
-        <label for="seriesId">
-          <span>Series ID</span>
-          <input value={header.seriesId} id="seriesId" name="seriesId" type="number" size="8" inputmode="numeric" pattern="\d*" disabled readonly />
-        </label>
         <label for="bookId">
           <span>Book ID</span>
-          <input value={header.bookId || null} onInput={props.handlers.updateBookId} id="bookId" name="bookId" type="number" size="8" min="0" max="1000" step="1" inputmode="numeric" pattern="\d*" />
+          <input value={header.bookId || null} onInput={props.handlers.updateBookId} id="bookId" name="bookId" type="number" size="8" min="49000" max="50000" step="1" inputmode="numeric" pattern="\d*" />
         </label>
         <label for="bookName">
           <span>Book Name</span>

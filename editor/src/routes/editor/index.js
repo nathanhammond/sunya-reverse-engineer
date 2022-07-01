@@ -15,7 +15,6 @@ class Editor extends Component {
   state = {
     header: {
       editor: ' ZHHC GernealOIDDataLinker V2.01',
-      seriesId: 49000,
       bookName: '',
       bookId: NaN,
       codeStartId: 2000,
@@ -544,7 +543,7 @@ class Editor extends Component {
 
   render() {
     let bookCode = { ...this.state.bookCode };
-    let bookId = this.state.header.seriesId + this.state.header.bookId;
+    let bookId = this.state.header.bookId;
     if (!isNaN(bookId)) {
       bookCode.id = bookId;
     }

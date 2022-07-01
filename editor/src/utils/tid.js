@@ -47,8 +47,7 @@ export async function read(event) {
     let reader = new DataView(content);
 
     let editor = decoder.decode(content.slice(0, 32));
-    let seriesId = 49000;
-    let bookId = reader.getUint32(0x7C, LITTLE_ENDIAN) - seriesId;
+    let bookId = reader.getUint32(0x7C, LITTLE_ENDIAN);
     let bookName = file.name.replace(/\.tid$/, '');
 
     let fileSizeOffBy2000 = reader.getUint32(0x84, BIG_ENDIAN)
@@ -141,7 +140,7 @@ export async function read(event) {
       }
 
       // Book code.
-      if (code === seriesId + bookId) {
+      if (code === bookId) {
         bookCode = {
           uuid: uuid++,
           id: code,
@@ -155,7 +154,7 @@ export async function read(event) {
       }
 
       // System codes.
-      if (code > seriesId + bookId) {
+      if (code > bookId) {
         systemCodes.push({
           uuid: uuid++,
           id: code,
@@ -172,7 +171,6 @@ export async function read(event) {
     let output = {
       header: {
         editor,
-        seriesId,
         bookName,
         bookId,
         codeStartId,
