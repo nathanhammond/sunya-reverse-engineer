@@ -4,7 +4,7 @@ import style from './style.css';
 
 const Header = () => (
 	<header className={style.header}>
-		<h1><Link href="/">Sun Ya OID Pen</Link></h1>
+		<h1><Link href="/">Sun Ya OID Pen Config</Link></h1>
 		<nav>
 			<Link activeClassName={style.active} href="/editor">Editor</Link>
 		</nav>
