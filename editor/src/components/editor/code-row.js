@@ -3,7 +3,7 @@ import { AUTO_CODES } from '../../utils/constants';
 import Mp3Selector from './mp3-selector';
 
 function SingleCell(props) {
-  return <td colspan={props.languageCount}><Mp3Selector single={true} chooseMp3={props.chooseMp3} selected={props.code.mp3s[0]} language={""} mp3s={props.mp3s} /></td>
+  return <td colspan={props.languageCount}><Mp3Selector single={true} chooseMp3={props.chooseMp3} selected={props.code.mp3s[0]} languageIndex={NaN} mp3s={props.mp3s} /></td>
 }
 
 function MultiCell(props) {

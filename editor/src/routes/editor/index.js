@@ -538,10 +538,16 @@ class Editor extends Component {
       });
     };
 
-    this.handlers.codeRow.chooseMp3 = (code, language, mp3Hash) => {
+    this.handlers.codeRow.chooseMp3 = (code, languageIndex, mp3Hash) => {
+      let codeMp3s = [...code.mp3s];
+      if (!Number.isNaN(languageIndex)) {
+        codeMp3s[languageIndex] = mp3Hash;
+      } else {
+        codeMp3s.fill(mp3Hash)
+      }
       let newCode = {
         ...code,
-        [language]: mp3Hash
+        mp3s: codeMp3s
       };
 
       let updatedCodes = this.state.codes.map(checkCode => {
@@ -563,10 +569,16 @@ class Editor extends Component {
       });
     };
 
-    this.handlers.bookCodeRow.chooseMp3 = (code, language, mp3Hash) => {
+    this.handlers.bookCodeRow.chooseMp3 = (code, languageIndex, mp3Hash) => {
+      let codeMp3s = [...code.mp3s];
+      if (!Number.isNaN(languageIndex)) {
+        codeMp3s[languageIndex] = mp3Hash;
+      } else {
+        codeMp3s.fill(mp3Hash)
+      }
       let newCode = {
         ...code,
-        [language]: mp3Hash
+        mp3s: codeMp3s
       };
 
       this.setState({
@@ -574,10 +586,16 @@ class Editor extends Component {
       });
     };
 
-    this.handlers.systemCodeRow.chooseMp3 = (code, language, mp3Hash) => {
+    this.handlers.systemCodeRow.chooseMp3 = (code, languageIndex, mp3Hash) => {
+      let codeMp3s = [...code.mp3s];
+      if (!Number.isNaN(languageIndex)) {
+        codeMp3s[languageIndex] = mp3Hash;
+      } else {
+        codeMp3s.fill(mp3Hash)
+      }
       let newCode = {
         ...code,
-        [language]: mp3Hash
+        mp3s: codeMp3s
       };
 
       let updatedCodes = this.state.systemCodes.map(checkCode => {

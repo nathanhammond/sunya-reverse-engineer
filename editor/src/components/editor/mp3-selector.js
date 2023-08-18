@@ -18,7 +18,7 @@ function Unselected(props) {
     <>
       <select onChange={props.chooseMp3}>
         <option>Choose MP3</option>
-        {props.mp3Array.map(mp3 => <option key={mp3.hash} value={mp3.hash}>{mp3.fileName}</option>)}
+        {props.mp3Array.map(mp3 => <option key={mp3.hash} value={mp3.hash}>{mp3.fileName || mp3.hash}</option>)}
       </select>
       {/* <button type="button">Upload</button> */}
       {/* <button type="button">Record</button> */}
@@ -43,7 +43,7 @@ class Mp3Selector extends Component {
     }
 
     let chooseMp3 = (event) => {
-      props.chooseMp3(props.language, event.target.value)
+      props.chooseMp3(props.languageIndex, event.target.value)
     }
 
     return props.selected ? <Selected mp3={mp3} chooseMp3={chooseMp3} unmatchedLanguage={unmatchedLanguage} languages={props.languages} /> : <Unselected chooseMp3={chooseMp3} mp3Array={mp3Array} />
