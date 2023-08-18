@@ -43,8 +43,9 @@ const SYSTEM_CODE_DECRIPTIONS = {
 export async function read(event) {
   let file = event.target.files[0];
 
-  return event.target.files[0].arrayBuffer().then(async content => {
+  return file.arrayBuffer().then(async content => {
     let reader = new DataView(content);
+    let bodyStart = 0x118;
 
     let editor = decoder.decode(content.slice(0, 32));
     let bookId = reader.getUint16(0x7C, LITTLE_ENDIAN);
@@ -60,6 +61,10 @@ export async function read(event) {
     let codeStartId = reader.getUint32(0x114, LITTLE_ENDIAN)
     let arrayLength = reader.getUint32(0x110, LITTLE_ENDIAN)
 
+    // WARN: Possible that some future version doesn't keep this consistent.
+    let languageCount = reader.getUint8(bodyStart + 1);
+    let languages = [];
+
     // TODO: Read the bonus data for 49000
     // let unknown = reader.getUint32(0x80, BIG_ENDIAN)
 
@@ -69,13 +74,12 @@ export async function read(event) {
     let bookCode = {};
     let systemCodes = [];
 
-    let bodyStart = 0x118;
     for (let i = 0; i < arrayLength; i++) {
       let offset = i * 7;
       let code = codeStartId + i;
       if (
         reader.getUint8(bodyStart + offset) == 0x01 &&
-        reader.getUint8(bodyStart + offset + 1) == 0x03 &&
+        reader.getUint8(bodyStart + offset + 1) == languageCount &&
         reader.getUint8(bodyStart + offset + 2) == 0x00
       ) {
         codeLookup[code] = reader.getUint32(bodyStart + offset + 3);
@@ -89,71 +93,27 @@ export async function read(event) {
       let lookupAddress = codeLookup[code];
       if (!lookupAddress) { continue; }
 
-      let cantoneseStart = reader.getUint32(lookupAddress + 0);
-      let cantoneseLength = reader.getUint32(lookupAddress + 4);
-      let englishStart = reader.getUint32(lookupAddress + 8);
-      let englishLength = reader.getUint32(lookupAddress + 12);
-      let mandarinStart = reader.getUint32(lookupAddress + 16);
-      let mandarinLength = reader.getUint32(lookupAddress + 20);
-
-      let [cantoneseMp3, englishMp3, mandarinMp3] = await Promise.all([
-        mp3FromBuffer(content.slice(cantoneseStart, cantoneseStart + cantoneseLength)),
-        mp3FromBuffer(content.slice(englishStart, englishStart + englishLength)),
-        mp3FromBuffer(content.slice(mandarinStart, mandarinStart + mandarinLength))
-      ]);
-
-      let ceMatch = cantoneseMp3.hash === englishMp3.hash
-      let cmMatch = cantoneseMp3.hash === mandarinMp3.hash
-      let emMatch = englishMp3.hash === mandarinMp3.hash
-      let singleMp3 = ceMatch && cmMatch && emMatch;
-
-      let allUnique = !ceMatch && !cmMatch && !emMatch;
-      let cantoneseUnique = !ceMatch && !cmMatch;
-      let englishUnique = !ceMatch && !emMatch;
-      let mandarinUnique = !cmMatch && !emMatch;
-
-      if (singleMp3) {
-        // All three match. Just use any of them. Don't set a language.
-        mp3s[cantoneseMp3.hash] = cantoneseMp3;
-      } else if (allUnique) {
-        // Zero match. Blindly set language, blindly store.
-        cantoneseMp3.language = "cantonese";
-        englishMp3.language = "english";
-        mandarinMp3.language = "mandarin";
-        mp3s[cantoneseMp3.hash] = cantoneseMp3;
-        mp3s[englishMp3.hash] = englishMp3;
-        mp3s[mandarinMp3.hash] = mandarinMp3;
-      } else {
-        // Two match, one of the three is unique.
-
-        // Handle the unique one.
-        if (cantoneseUnique) {
-          cantoneseMp3.language = "cantonese";
-          mp3s[cantoneseMp3.hash] = cantoneseMp3;
-        } else if (englishUnique) {
-          englishMp3.language = "english";
-          mp3s[englishMp3.hash] = englishMp3;
-        } else if (mandarinUnique) {
-          mandarinMp3.language = "mandarin";
-          mp3s[mandarinMp3.hash] = mandarinMp3;
-        } else {
-          throw new Error("Impossible!");
-        }
-
-        // Figure out which two match and make an informed guess about language.
-        if (ceMatch) {
-          cantoneseMp3.language = "cantonese";
-          mp3s[cantoneseMp3.hash] = cantoneseMp3;
-        } else if (cmMatch) {
-          cantoneseMp3.language = "cantonese";
-          mp3s[cantoneseMp3.hash] = cantoneseMp3;
-        } else if (emMatch) {
-          mandarinMp3.language = "mandarin";
-          mp3s[mandarinMp3.hash] = mandarinMp3;
-        } else {
-          throw new Error("Impossible!");
-        }
+      let languages = [];
+      for (let languageIndex = 0; languageIndex < languageCount; languageIndex++) {
+        let offset = 8 * languageIndex;
+        languages.push({
+          start: reader.getUint32(lookupAddress + offset),
+          length: reader.getUint32(lookupAddress + offset + 4),
+        });
       }
+
+      let codeMp3s = await Promise.all(languages.map(({ start, length }) => mp3FromBuffer(content.slice(start, start + length))));
+      let singleMp3 = codeMp3s.every(mp3 => mp3.hash === codeMp3s[0].hash);
+
+      codeMp3s.forEach((mp3, languageIndex) => {
+        const existing = mp3s[mp3.hash];
+        if (existing && existing.languageIndex !== languageIndex) {
+          existing.languageIndex = NaN;
+        } else {
+          mp3.languageIndex = languageIndex;
+          mp3s[mp3.hash] = mp3;
+        }
+      });
 
       code = parseInt(code, 10);
 
@@ -164,9 +124,7 @@ export async function read(event) {
           id: code,
           description: '',
           singleMp3,
-          cantonese: cantoneseMp3.hash,
-          english: englishMp3.hash,
-          mandarin: mandarinMp3.hash,
+          mp3s: codeMp3s.map(mp3 => mp3.hash),
         });
         continue;
       }
@@ -178,9 +136,7 @@ export async function read(event) {
           id: code,
           description: bookName,
           singleMp3,
-          cantonese: cantoneseMp3.hash,
-          english: englishMp3.hash,
-          mandarin: mandarinMp3.hash,
+          mp3s: codeMp3s.map(mp3 => mp3.hash),
         };
         continue;
       }
@@ -192,9 +148,7 @@ export async function read(event) {
           id: code,
           description: SYSTEM_CODE_DECRIPTIONS[code],
           singleMp3,
-          cantonese: cantoneseMp3.hash,
-          english: englishMp3.hash,
-          mandarin: mandarinMp3.hash,
+          mp3s: codeMp3s.map(mp3 => mp3.hash),
         });
         continue;
       }
@@ -207,6 +161,8 @@ export async function read(event) {
         bookId,
         codeStartId,
         arrayLength,
+        languageCount,
+        languages,
         fileSizeOffBy2000,
         fileSize,
         codeStrategy: MANUAL_CODES

@@ -1,6 +1,7 @@
 import { h, Component } from 'preact';
 import Menu from '../../components/editor/menu';
 import FileHeader from '../../components/editor/file-header';
+import LanguageDefiner from '../../components/editor/language-definer';
 import Mp3Table from '../../components/editor/mp3-table';
 import CodeTable from '../../components/editor/code-table';
 import SystemCodeTable from '../../components/editor/system-code-table';
@@ -19,13 +20,16 @@ class Editor extends Component {
       bookId: NaN,
       codeStartId: 2000,
       arrayLength: NaN,
+      languageCount: 0,
+      languages: [],
       codeStrategy: AUTO_CODES
     },
     mp3s: {},
     codes: [],
     bookCode: {
       description: "Book Name",
-      singleMp3: false
+      singleMp3: false,
+      mp3s: [],
     },
     systemSource: SYSTEM_SOURCES.SUNYA,
     systemCodes: [
@@ -33,178 +37,212 @@ class Editor extends Component {
         id: 52001,
         description: "Language Switch: English",
         singleMp3: true,
+        mp3s: [],
       },
       {
         id: 52002,
         description: "Language Switch: Cantonese?",
         singleMp3: true,
+        mp3s: [],
         comment: "Probably?",
       },
       {
         id: 52003,
         description: "Language Switch: Mandarin",
         singleMp3: true,
+        mp3s: [],
       },
       {
         id: 52006,
         description: "Exit",
         singleMp3: false,
+        mp3s: [],
         comment: "49000",
       },
       {
         id: 52007,
         description: "Volume Up (Xylophone Ding)",
         singleMp3: true,
+        mp3s: [],
       },
       {
         id: 52008,
         description: "Volume Down (Xylophone Ding)",
         singleMp3: true,
+        mp3s: [],
       },
       {
         id: 52026,
         description: "Start Recording",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 52027,
         description: "Recording Finished",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 52030,
         description: "Let's Listen to the Music",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 52033,
         description: "Unknown (Marimba Ding)",
         singleMp3: true,
+        mp3s: [],
       },
       {
         id: 52046,
         description: "粵語朗讀故事",
         singleMp3: true,
+        mp3s: [],
       },
       {
         id: 52100,
         description: "Spelling Game Instructions for letters at bottom of page",
         singleMp3: false,
+        mp3s: [],
         comment: "49000",
       },
       {
         id: 52101,
         description: "Spelling Game Instructions for letter cards",
         singleMp3: false,
+        mp3s: [],
         comment: "49000",
       },
       {
         id: 52102,
         description: "Dictionary, please choose your language",
         singleMp3: false,
+        mp3s: [],
         comment: "49000",
       },
       {
         id: 68000,
         description: "Greeting",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68001,
         description: "Goodbye",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68002,
         description: "Low Power Notification",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68006,
         description: "Idle Reminder",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68007,
         description: "Book Select Instruction",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68008,
         description: "Memory Full",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68009,
         description: "No Music, please download files",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68010,
         description: "No Audio found, please download files",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68011,
         description: "No Recordings",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68031,
         description: "Instructions For Recording",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68040,
         description: "Child Protective Lock On",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68041,
         description: "Maximum Volume Reached",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68042,
         description: "Child Protective Lock Off",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68084,
         description: "Please Unlock",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68085,
         description: "Twinkle 1",
         singleMp3: true,
+        mp3s: [],
         comment: "49000 Uses this sound for touching the cover.",
       },
       {
         id: 68086,
         description: "Language Name",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
       {
         id: 68087,
         description: "Twinkle 1",
         singleMp3: true,
+        mp3s: [],
         comment: "49000 Uses this sound for touching the cover.",
       },
       {
         id: 68088,
         description: "DIY Recording Start (Digital Ding)",
         singleMp3: true,
+        mp3s: [],
       },
       {
         id: 68089,
         description: "DIY Recording Finished (Marimba Ding)",
         singleMp3: true,
+        mp3s: [],
       },
       {
         id: 68090,
         description: "Silent",
-        singleMp3: false
+        singleMp3: false,
+        mp3s: [],
       },
     ],
   };
@@ -246,6 +284,31 @@ class Editor extends Component {
           header: {
             ...state.header,
             bookName: event.target.value
+          }
+        }
+      });
+    };
+
+    this.handlers.header.updateLanguageCount = (event) => {
+      this.setState((state) => {
+        return {
+          header: {
+            ...state.header,
+            languageCount: parseInt(event.target.value, 10)
+          }
+        }
+      });
+    };
+
+    this.handlers.header.updateLanguage = (index, event) => {
+      this.setState((state) => {
+        let newValue = [...state.header.languages];
+        newValue[index] = event.target.value;
+
+        return {
+          header: {
+            ...state.header,
+            languages: newValue
           }
         }
       });
@@ -293,7 +356,7 @@ class Editor extends Component {
 
     this.handlers.mp3Row.updateLanguage = (event, mp3) => {
       const output = { ...this.state.mp3s };
-      output[mp3.hash].language = event.target.value;
+      output[mp3.hash].languageIndex = parseInt(event.target.value);
 
       this.setState({
         mp3s: output
@@ -310,20 +373,16 @@ class Editor extends Component {
     };
 
     function checkAndReplace(sourceObj, oldHash, newHash) {
-      let needsUpdate = sourceObj.cantonese === oldHash || sourceObj.english === oldHash || sourceObj.mandarin === oldHash;
+      let needsUpdate = sourceObj.mp3s.some(language => language.hash === oldHash);
       if (needsUpdate) {
         let newObj = {
           ...sourceObj
         };
-        if (newObj["cantonese"] === oldHash) {
-          newObj["cantonese"] = newHash;
-        }
-        if (newObj["english"] === oldHash) {
-          newObj["english"] = newHash;
-        }
-        if (newObj["mandarin"] === oldHash) {
-          newObj["mandarin"] = newHash;
-        }
+        newObj.mp3s.forEach((language, index) => {
+          if (language === oldHash) {
+            newObj.mp3s[index] = newHash;
+          }
+        });
         return newObj;
       }
 
@@ -426,10 +485,8 @@ class Editor extends Component {
         id: NaN,
         description: '',
         singleMp3: false,
+        mp3s: [],
         comment: '',
-        cantonese: undefined,
-        english: undefined,
-        mandarin: undefined
       };
 
       this.setState({ codes: [...this.state.codes, newCode] });
@@ -561,9 +618,10 @@ class Editor extends Component {
       <Menu handlers={this.handlers.menu} />
 
       <FileHeader header={this.state.header} handlers={this.handlers.header} />
-      <Mp3Table mp3s={this.state.mp3s} handlers={this.handlers.mp3} rowHandlers={this.handlers.mp3Row} />
+      <LanguageDefiner header={this.state.header} handlers={this.handlers.header} />
+      <Mp3Table mp3s={this.state.mp3s} handlers={this.handlers.mp3} rowHandlers={this.handlers.mp3Row} languages={this.state.header.languages} />
       <CodeTable header={this.state.header} mp3s={this.state.mp3s} codes={this.state.codes} handlers={this.handlers.code} rowHandlers={this.handlers.codeRow} />
-      <SystemCodeTable bookCode={bookCode} bookCodeRowHandlers={this.handlers.bookCodeRow} mp3s={this.state.mp3s} codes={this.state.systemCodes} systemSource={this.state.systemSource} handlers={this.handlers.systemCode} rowHandlers={this.handlers.systemCodeRow} />
+      <SystemCodeTable header={this.state.header} bookCode={bookCode} bookCodeRowHandlers={this.handlers.bookCodeRow} mp3s={this.state.mp3s} codes={this.state.systemCodes} systemSource={this.state.systemSource} handlers={this.handlers.systemCode} rowHandlers={this.handlers.systemCodeRow} />
     </div>
   }
 }

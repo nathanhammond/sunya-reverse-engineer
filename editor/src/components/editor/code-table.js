@@ -3,6 +3,16 @@ import CodeRow from "./code-row";
 import { AUTO_CODES } from '../../utils/constants';
 import style from "../../routes/editor/style.css";
 
+function LanguageHeader(props) {
+  return [...new Array(props.languageCount)].map((_, index) => {
+    if (props.languages[index]) {
+      return <th>{props.languages[index]}</th>
+    } else {
+      return <th>Unknown {index}</th>
+    }
+  });
+}
+
 class CodeTable extends Component {
   state = {};
 
@@ -16,7 +26,7 @@ class CodeTable extends Component {
       codeStartId = Math.min(...props.codes.map(code => isNaN(code.id) ? Infinity : code.id));
     }
 
-    return (      
+    return (
       <>
         <h2>Book Codes</h2>
         <label for="codeStrategy">
@@ -29,10 +39,10 @@ class CodeTable extends Component {
         </label>
         <table>
           <thead>
-            <tr><th>Code</th><th>Description</th><th>Cantonese</th><th>English</th><th>Mandarin</th><th>Remove</th></tr>
+            <tr><th>Code</th><th>Description</th><LanguageHeader languageCount={props.header.languageCount} languages={props.header.languages} /><th>Remove</th></tr>
           </thead>
           <tbody>
-            {props.codes.map((code, index) => <CodeRow key={code.uuid} index={index} code={code} mp3s={props.mp3s} codeStartId={props.header.codeStartId} codeStrategy={props.header.codeStrategy} handlers={props.rowHandlers} />)}
+            {props.codes.map((code, index) => <CodeRow key={code.uuid} index={index} code={code} mp3s={props.mp3s} languageCount={props.header.languageCount} languages={props.header.languages} codeStartId={props.header.codeStartId} codeStrategy={props.header.codeStrategy} handlers={props.rowHandlers} />)}
           </tbody>
         </table>
         <button className={style.button} type="button" onClick={props.handlers.add}>Add Code</button>

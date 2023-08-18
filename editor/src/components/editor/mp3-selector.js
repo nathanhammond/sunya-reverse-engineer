@@ -4,11 +4,11 @@ import style from "../../routes/editor/style.css";
 function Selected(props) {
   return (
     <>
-      <span>{props.mp3.description || props.mp3.fileName}</span>
+      <span>{props.mp3.description || props.mp3.fileName || props.mp3.hash}</span>
       <a className={style.button} href={`#${props.mp3.hash}`}>Jump to MP3</a>
       {/* <button type="button">Play</button> */}
       <button type="button" onClick={props.chooseMp3}>Change</button>
-      {props.unmatchedLanguage ? <span>⚠️ {props.mp3.language.substr(0,1).toUpperCase() + props.mp3.language.substr(1)}</span> : ""}
+      {props.unmatchedLanguage ? <span>⚠️ {props.languages[props.mp3.languageIndex]}</span> : ""}
     </>
   );
 }
@@ -38,15 +38,15 @@ class Mp3Selector extends Component {
     }
 
     let unmatchedLanguage = false;
-    if (mp3 && !props.single) {
-      unmatchedLanguage = mp3.language !== props.language;
+    if (mp3 && !Number.isNaN(mp3.languageIndex) && !props.single) {
+      unmatchedLanguage = mp3.languageIndex !== props.languageIndex;
     }
 
     let chooseMp3 = (event) => {
       props.chooseMp3(props.language, event.target.value)
     }
 
-    return props.selected ? <Selected mp3={mp3} chooseMp3={chooseMp3} unmatchedLanguage={unmatchedLanguage} /> : <Unselected chooseMp3={chooseMp3} mp3Array={mp3Array} />
+    return props.selected ? <Selected mp3={mp3} chooseMp3={chooseMp3} unmatchedLanguage={unmatchedLanguage} languages={props.languages} /> : <Unselected chooseMp3={chooseMp3} mp3Array={mp3Array} />
   }
 }
 

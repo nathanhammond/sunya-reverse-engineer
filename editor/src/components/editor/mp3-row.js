@@ -31,16 +31,14 @@ class Mp3Row extends Component {
         <td>{props.mp3.size}</td>
         <td>{details}</td>
         <td>
-          <select value={props.mp3.language} onChange={updateLanguage}>
-            <option selected={props.mp3.name} value="">Select language</option>
-            <option value="cantonese">Cantonese</option>
-            <option value="english">English</option>
-            <option value="mandarin">Mandarin</option>
+          <select value={props.mp3.languageIndex} onChange={updateLanguage}>
+            <option value="">Select language</option>
+            {props.languages.map((language, index) => <option selected={props.mp3.languageIndex === index} value={index}>{language}</option>)}
           </select>
         </td>
         <td><input type="text" value={props.mp3.description} onInput={updateDescription} /></td>
         <td className={rowStyle.playback}><button type="button" onClick={playMp3}>Play</button></td>
-        <td><a className={style.button} href={props.mp3.objectURL} download={props.mp3.fileName}>💾 Save</a></td>
+        <td><a className={style.button} href={props.mp3.objectURL} download={props.mp3.fileName || props.mp3.hash}>💾 Save</a></td>
         <td>
           <input type="file" id={`replace-${props.mp3.hash}`} name={`replace-${props.mp3.hash}`} className={style.inputfile} onChange={replaceMp3} accept=".mp3,audio/mpeg" />
           <label className={style.button} for={`replace-${props.mp3.hash}`}>🔧 Replace</label>

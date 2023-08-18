@@ -75,7 +75,7 @@ class Mp3Table extends Component {
             </tr>
           </thead>
           <tbody>
-            {mp3s.map(mp3 => <Mp3Row key={mp3.hash} mp3={mp3} handlers={rowHandlers} />)}
+            {mp3s.map(mp3 => <Mp3Row key={mp3.hash} mp3={mp3} languages={props.languages} handlers={rowHandlers} />)}
           </tbody>
         </table>
         <label className={style.button} for="addMp3">Add MP3</label>

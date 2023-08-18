@@ -2,6 +2,16 @@ import { h, Component } from 'preact';
 import { SYSTEM_SOURCES } from '../../utils/constants';
 import SystemCodeRow from "./system-code-row";
 
+function LanguageHeader(props) {
+  return [...new Array(props.languageCount)].map((_, index) => {
+    if (props.languages[index]) {
+      return <th>{props.languages[index]}</th>
+    } else {
+      return <th>Unknown {index}</th>
+    }
+  });
+}
+
 class SystemCodeTable extends Component {
   state = {}
 
@@ -17,11 +27,11 @@ class SystemCodeTable extends Component {
         </fieldset>
         <table>
           <thead>
-            <tr><th>Code</th><th>Description</th><th>Cantonese</th><th>English</th><th>Mandarin</th></tr>
+            <tr><th>Code</th><th>Description</th><LanguageHeader languageCount={props.header.languageCount} languages={props.header.languages} /></tr>
           </thead>
           <tbody>
-            <SystemCodeRow code={props.bookCode} mp3s={props.mp3s} handlers={props.bookCodeRowHandlers} />
-            { props.systemSource === SYSTEM_SOURCES.CUSTOM ? props.codes.map((code) => <SystemCodeRow key={code.id} code={code} mp3s={props.mp3s} handlers={props.rowHandlers} />) : <></>}
+            <SystemCodeRow code={props.bookCode} mp3s={props.mp3s} languageCount={props.header.languageCount} languages={props.header.languages} handlers={props.bookCodeRowHandlers} />
+            { props.systemSource === SYSTEM_SOURCES.CUSTOM ? props.codes.map((code) => <SystemCodeRow key={code.id} code={code} mp3s={props.mp3s} languageCount={props.header.languageCount} languages={props.header.languages} handlers={props.rowHandlers} />) : <></>}
           </tbody>
         </table>
       </>

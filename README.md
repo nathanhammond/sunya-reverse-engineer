@@ -28,7 +28,7 @@ The header is 280 bytes long and starts at `0x00`. It has the following structur
 |---|---|---|---|
 | `0x00` | Big Endian | 32 bytes | Editor tag. For example: ` ZHHC GernealOIDDataLinker V2.01` |
 | `0x7C` | Little Endian | uint16 | Book ID. Starting from `49000` (mostly). |
-| `0x7E` | Little Endian | uint16 | Unkown. Always 61 if present. |
+| `0x7E` | Little Endian | uint16 | Unknown. Always 61 if present. |
 | `0x80` | Big Endian | uint32 | Second Section start. Only appears in book ID `49000` (新雅幼兒互動點讀圖典及拼字套裝).
 | `0x84` | Big Endian | uint32 | File size in bytes. This field represents the overall file size, but it is actually 2,000 bytes less than the file size. |
 | `0x110` | Little Endian | uint32 | Array length. This specifies the element count of the array directly following the header. |
@@ -46,7 +46,9 @@ This section starts at `0x118` and has a variable length. The length of this sec
 
 | Endian | Length | Description |
 |---|---|---|
-| Unknown | 3 bytes | Unknown. Always `0x́010300`. Possible that this specifies how many languages are available in the target structure.
+| Unknown | 1 byte | Unknown. Always `0x́01`.
+| Little Endian | 1 byte | Unknown. e.g. `0x́03`. This specifies how many languages are available in the target structure.
+| Unknown | 1 byte | Unknown. Always `0x́00`.
 | Big Endian | uint32 | Pointer. An address within the file to a struct that contains three languages worth of MP3 address and length information. |
 
 If there is no value present the whole struct is 7 bytes of `0xFF`.
