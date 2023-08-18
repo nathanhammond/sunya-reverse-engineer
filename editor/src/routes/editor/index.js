@@ -322,29 +322,30 @@ class Editor extends Component {
       for (let i = 0; i < currentFiles.length; i++) {
         let file = currentFiles[i];
         let fileBuffer = await readFile(file);
-        let mp3 = await mp3FromBuffer(fileBuffer);
+        let newMp3 = await mp3FromBuffer(fileBuffer);
 
-        if (!mp3) {
+        if (!newMp3) {
+          // TODO: Surface this error to the UI.
+          console.log(`Error adding mp3: ${file.name}`)
           continue;
         }
 
-        let current = output[mp3.hash];
-        if (current) {
-          URL.revokeObjectURL(current.objectURL);
-          output[mp3.hash] = {
+        // Check for collisions with other mp3s.
+        let collision = this.state.mp3s[newMp3.hash];
+        let hasCollision = !!collision;
+
+        if (hasCollision) {
+          URL.revokeObjectURL(newMp3.objectURL);
+          output[collision.hash] = {
+            ...collision,
             fileName: file.name,
-            size: file.size,
-            language: current.language,
-            description: current.description,
-            objectURL: mp3.objectURL
           };
         } else {
-          output[mp3.hash] = {
+          output[newMp3.hash] = {
+            ...newMp3,
             fileName: file.name,
-            size: file.size,
-            language: '',
+            languageIndex: NaN,
             description: '',
-            objectURL: mp3.objectURL
           };
         }
       }
@@ -373,16 +374,12 @@ class Editor extends Component {
     };
 
     function checkAndReplace(sourceObj, oldHash, newHash) {
-      let needsUpdate = sourceObj.mp3s.some(language => language.hash === oldHash);
+      let needsUpdate = sourceObj.mp3s.some(mp3 => mp3 === oldHash);
       if (needsUpdate) {
         let newObj = {
           ...sourceObj
         };
-        newObj.mp3s.forEach((language, index) => {
-          if (language === oldHash) {
-            newObj.mp3s[index] = newHash;
-          }
-        });
+        newObj.mp3s = sourceObj.mp3s.map(mp3 => mp3 === oldHash ? newHash : oldHash);
         return newObj;
       }
 
@@ -408,10 +405,7 @@ class Editor extends Component {
     };
 
     this.handlers.mp3Row.replace = async (oldMp3, event) => {
-      const output = { ...this.state.mp3s };
-
       const currentFiles = [].slice.call(event.target.files);
-
       let file = currentFiles[0];
       let fileBuffer = await readFile(file);
       let newMp3 = await mp3FromBuffer(fileBuffer);
@@ -421,23 +415,33 @@ class Editor extends Component {
         return;
       }
 
-      let current = output[newMp3.hash];
-      if (current) {
-        URL.revokeObjectURL(current.objectURL);
-        output[newMp3.hash] = {
+      // Check for self-replacing.
+      if (oldMp3.hash === newMp3.hash) {
+        URL.revokeObjectURL(newMp3.objectURL);
+        return;
+      }
+
+      const output = { ...this.state.mp3s };
+
+      // Check for collisions with other mp3s.
+      let collision = this.state.mp3s[newMp3.hash];
+      let hasCollision = !!collision;
+
+      if (hasCollision) {
+        URL.revokeObjectURL(newMp3.objectURL);
+        let languageIndex = (oldMp3.languageIndex === collision.languageIndex ? oldMp3.languageIndex : NaN);
+        output[collision.hash] = {
+          ...collision,
           fileName: file.name,
-          size: file.size,
-          language: current.language,
-          description: current.description,
-          objectURL: newMp3.objectURL
+          languageIndex,
+          description: collision.description,
         };
       } else {
         output[newMp3.hash] = {
+          ...newMp3,
           fileName: file.name,
-          size: file.size,
-          language: '',
-          description: '',
-          objectURL: newMp3.objectURL
+          languageIndex: oldMp3.languageIndex,
+          description: oldMp3.description,
         };
       }
 
@@ -454,6 +458,8 @@ class Editor extends Component {
         bookCode: newBookCode,
         systemCodes: newSystemCodes,
       });
+
+      // TODO: Set focus to this newly-replaced item.
     };
 
     this.handlers.code.updateCodeStartId = (event) => {
