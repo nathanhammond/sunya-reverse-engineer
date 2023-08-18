@@ -28,7 +28,7 @@ class LanguageDefiner extends Component {
         <h2>Languages</h2>
         <label for="languageCount">
           <span>Language Count</span>
-          <input value={header.languageCount} onInput={props.handlers.updateLanguageCount} id="languageCount" name="languageCount" type="number" size="8" min="1" max="255" step="1" inputmode="numeric" pattern="\d*"/>
+          <input value={header.languageCount} onInput={props.handlers.updateLanguageCount} id="languageCount" name="languageCount" type="number" size="8" min="0" max="255" step="1" inputmode="numeric" pattern="\d*"/>
         </label>
 
         <LanguageCounter handlers={props.handlers} languageCount={header.languageCount} languages={header.languages} />
