@@ -7,7 +7,7 @@ function LanguageHeader(props) {
     if (props.languages[index]) {
       return <th>{props.languages[index]}</th>
     } else {
-      return <th>Unknown {index}</th>
+      return <th>Language {index}</th>
     }
   });
 }
@@ -27,7 +27,7 @@ class SystemCodeTable extends Component {
         </fieldset>
         <table>
           <thead>
-            <tr><th>Code</th><th>Description</th><LanguageHeader languageCount={props.header.languageCount} languages={props.header.languages} /></tr>
+            <tr><th>Code</th><th>Description</th><th>Single?</th><LanguageHeader languageCount={props.header.languageCount} languages={props.header.languages} /></tr>
           </thead>
           <tbody>
             <SystemCodeRow code={props.bookCode} mp3s={props.mp3s} languageCount={props.header.languageCount} languages={props.header.languages} handlers={props.bookCodeRowHandlers} />

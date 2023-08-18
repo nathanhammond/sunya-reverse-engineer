@@ -538,6 +538,32 @@ class Editor extends Component {
       });
     };
 
+    this.handlers.codeRow.updateSingleMp3 = (event, code) => {
+      // Reset mp3s when going from multiple to single.
+      let codeMp3s = [...code.mp3s];
+      if (event.target.checked && !code.mp3s.every(mp3 => code.mp3s[0] === mp3)) {
+        codeMp3s.fill("");
+      }
+
+      let newCode = {
+        ...code,
+        mp3s: codeMp3s,
+        singleMp3: event.target.checked
+      };
+
+      let updatedCodes = this.state.codes.map(checkCode => {
+        if (code === checkCode) {
+          return newCode;
+        }
+
+        return checkCode;
+      });
+
+      this.setState({
+        codes: updatedCodes
+      });
+    };
+
     this.handlers.codeRow.chooseMp3 = (code, languageIndex, mp3Hash) => {
       let codeMp3s = [...code.mp3s];
       if (!Number.isNaN(languageIndex)) {
@@ -569,6 +595,24 @@ class Editor extends Component {
       });
     };
 
+    this.handlers.bookCodeRow.updateSingleMp3 = (event, code) => {
+      // Reset mp3s when going from multiple to single.
+      let codeMp3s = [...code.mp3s];
+      if (event.target.checked && !code.mp3s.every(mp3 => code.mp3s[0] === mp3)) {
+        codeMp3s.fill("");
+      }
+
+      let newCode = {
+        ...code,
+        mp3s: codeMp3s,
+        singleMp3: event.target.checked
+      };
+
+      this.setState({
+        bookCode: newCode
+      });
+    };
+
     this.handlers.bookCodeRow.chooseMp3 = (code, languageIndex, mp3Hash) => {
       let codeMp3s = [...code.mp3s];
       if (!Number.isNaN(languageIndex)) {
@@ -583,6 +627,32 @@ class Editor extends Component {
 
       this.setState({
         bookCode: newCode
+      });
+    };
+
+    this.handlers.systemCodeRow.updateSingleMp3 = (event, code) => {
+      // Reset mp3s when going from multiple to single.
+      let codeMp3s = [...code.mp3s];
+      if (event.target.checked && !code.mp3s.every(mp3 => code.mp3s[0] === mp3)) {
+        codeMp3s.fill("");
+      }
+
+      let newCode = {
+        ...code,
+        mp3s: codeMp3s,
+        singleMp3: event.target.checked
+      };
+
+      let updatedCodes = this.state.systemCodes.map(checkCode => {
+        if (code === checkCode) {
+          return newCode;
+        }
+
+        return checkCode;
+      });
+
+      this.setState({
+        systemCodes: updatedCodes
       });
     };
 

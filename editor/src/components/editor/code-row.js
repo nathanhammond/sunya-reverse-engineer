@@ -27,6 +27,9 @@ class CodeRow extends Component {
     let updateDescription = (event) => {
       props.handlers.updateDescription(event, props.code);
     }
+    let updateSingleMp3 = (event) => {
+      props.handlers.updateSingleMp3(event, props.code);
+    }
     let deleteCode = () => {
       props.handlers.delete(props.code);
     }
@@ -36,6 +39,7 @@ class CodeRow extends Component {
       <tr>
         <td><input type="number" value={id} disabled={disabled} min="2000" max="48999" size="8" step="1" inputMode="numeric" pattern="\d*" onInput={updateId} /></td>
         <td><input type="text" value={code.description} onInput={updateDescription} /></td>
+        <td><input type="checkbox" checked={code.singleMp3} onInput={updateSingleMp3} /></td>
         {props.code.singleMp3 ? <SingleCell languageCount={props.languageCount} code={props.code} chooseMp3={chooseMp3} mp3s={props.mp3s} /> : <MultiCell languageCount={props.languageCount} languages={props.languages} code={props.code} chooseMp3={chooseMp3} mp3s={props.mp3s} />}
         <td><button type="button" onClick={deleteCode}>🗑 Remove</button></td>
       </tr>

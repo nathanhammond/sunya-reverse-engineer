@@ -8,7 +8,7 @@ function LanguageHeader(props) {
     if (props.languages[index]) {
       return <th>{props.languages[index]}</th>
     } else {
-      return <th>Unknown {index}</th>
+      return <th>Language {index}</th>
     }
   });
 }
@@ -39,7 +39,7 @@ class CodeTable extends Component {
         </label>
         <table>
           <thead>
-            <tr><th>Code</th><th>Description</th><LanguageHeader languageCount={props.header.languageCount} languages={props.header.languages} /><th>Remove</th></tr>
+            <tr><th>Code</th><th>Description</th><th>Single?</th><LanguageHeader languageCount={props.header.languageCount} languages={props.header.languages} /><th>Remove</th></tr>
           </thead>
           <tbody>
             {props.codes.map((code, index) => <CodeRow key={code.uuid} index={index} code={code} mp3s={props.mp3s} languageCount={props.header.languageCount} languages={props.header.languages} codeStartId={props.header.codeStartId} codeStrategy={props.header.codeStrategy} handlers={props.rowHandlers} />)}

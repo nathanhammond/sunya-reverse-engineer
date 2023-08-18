@@ -17,12 +17,17 @@ class SystemCodeRow extends Component {
 
   render(props) {
     let id = props.code.id || "______";
+
+    let updateSingleMp3 = (event) => {
+      props.handlers.updateSingleMp3(event, props.code);
+    }
     let chooseMp3 = props.handlers.chooseMp3.bind(null, props.code);
 
     return (
       <tr>
         <th>{id}</th>
         <td><span title={props.code.comment}>{props.code.description}</span></td>
+        <td><input type="checkbox" checked={props.code.singleMp3} onInput={updateSingleMp3} /></td>
         {props.code.singleMp3 ? <SingleCell languageCount={props.languageCount} code={props.code} chooseMp3={chooseMp3} mp3s={props.mp3s} /> : <MultiCell languageCount={props.languageCount} languages={props.languages} code={props.code} chooseMp3={chooseMp3} mp3s={props.mp3s} />}
       </tr>
     );
