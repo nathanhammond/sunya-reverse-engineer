@@ -11,6 +11,7 @@ import { mp3FromBuffer } from '../../utils/mp3';
 import { readFile } from '../../utils/file';
 
 import style from './style.css';
+import { write } from '../../utils/write';
 
 class Editor extends Component {
   state = {
@@ -265,6 +266,10 @@ class Editor extends Component {
     this.handlers.menu.openTidFile = async (event) => {
       let state = await read(event);
       this.setState(state);
+    }
+
+    this.handlers.menu.exportTidFile = async (event) => {
+      write(this.state);
     }
 
     this.handlers.header.updateBookId = (event) => {

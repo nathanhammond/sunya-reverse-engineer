@@ -157,6 +157,7 @@ export async function mp3FromBuffer(buffer) {
   return {
     hash: fileHash,
     size: buffer.byteLength,
+    buffer,
     objectURL: URL.createObjectURL(new Blob([buffer])),
     ...details
   };

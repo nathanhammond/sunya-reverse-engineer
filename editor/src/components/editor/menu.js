@@ -13,7 +13,7 @@ class Menu extends Component {
         <button className={style.button} type="button">Save Project</button>
         <input type="file" id="open-tid" name="open-tid" className={style.inputfile} accept=".tid" onChange={props.handlers.openTidFile} />
         <label className={style.button} for="open-tid">Open .tid</label>
-        <button className={style.button} type="button">Export .tid</button>
+        <button className={style.button} type="button" onClick={props.handlers.exportTidFile} >Export .tid</button>
       </nav>
     );
   }
