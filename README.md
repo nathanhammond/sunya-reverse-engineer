@@ -47,9 +47,9 @@ This section starts at `0x118` and has a variable length. The length of this sec
 | Endian | Length | Description |
 |---|---|---|
 | Unknown | 1 byte | Unknown. Always `0x́01`.
-| Little Endian | 1 byte | Unknown. e.g. `0x́03`. This specifies how many languages are available in the target structure.
+| Little Endian | uint8 | Number of languages available in the target structure. e.g. `0x́03`. 
 | Unknown | 1 byte | Unknown. Always `0x́00`.
-| Big Endian | uint32 | Pointer. An address within the file to a struct that contains three languages worth of MP3 address and length information. |
+| Big Endian | uint32 | Pointer. An address within the file to a struct that contains the number of languages worth of MP3 address and length information. |
 
 If there is no value present the whole struct is 7 bytes of `0xFF`.
 
@@ -68,18 +68,20 @@ The MP3 processor appears to support a large combination of MPEG versions and bi
 
 #### 3. Array of MP3 Address and Length Structs by Language
 
-Following the MP3s there is an array of structs that store address and length by language. The start position of this section is is variable. The length of this section is variable. Indexing into this array is done via direct addressing from the array of addresses in the first section.
+Following the MP3s there is an array of structs that store address and length by language. The start position of this section is directly following the MP# files section. The length of this section is:
 
-This segment is described by the following struct:
+```
+Number of Codes * Number of Languages * Struct Size (8 bytes)
+```
 
-| Endian | Length | Language | Description |
-|---|---|---|---|
-| Big Endian | uint32 | Cantonese | Pointer. The address within the file that the MP3 starts. |
-| Big Endian | uint32 | Cantonese | Length. The length in bytes of the MP3 stored at that address. |
-| Big Endian | uint32 | English | Pointer. The address within the file that the MP3 starts. |
-| Big Endian | uint32 | English | Length. The length in bytes of the MP3 stored at that address. |
-| Big Endian | uint32 | Mandarin | Pointer. The address within the file that the MP3 starts. |
-| Big Endian | uint32 | Mandarin | Length. The length in bytes of the MP3 stored at that address. |
+Indexing into this array is done via direct addressing from the array of addresses in the first section.
+
+Each language is described by the following struct:
+
+| Endian | Length | Description |
+|---|---|---|
+| Big Endian | uint32 | Pointer. The address within the file that the MP3 starts. |
+| Big Endian | uint32 | Length. The length in bytes of the MP3 stored at that address. |
 
 If sorted and deduplicated the array describes the continuous range that is the MP3 portion of the file. For example:
 
